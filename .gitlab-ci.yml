@@ -1,0 +1,38 @@
+stages:
+  - download
+  - build
+
+download:
+  stage: download
+  variables:
+    GIT_STRATEGY: none
+  image: registry.gitlab.com/jitesoft/dockerfiles/alpine:latest
+  before_script:
+    - apk add --no-cache wget grept
+  script:
+    # Fetch latest version from github.
+    - VERSION="$(wget -qO- https://github.com/revive-adserver/revive-adserver/releases | grep -oP '(?<=releases\/tag\/)(.*?)(?=\">)' | awk 'NR==1{print $1}' | head -1)"
+    - echo "${VERSION#?}" > version.txt # Remove "v"
+    # Fetch latest version SHA from revive page.
+    - SHA=$(wget -qO- https://www.revive-adserver.com/download | grep -oP "(?<=sha256:)(\S*)(?=</li>)" | tail -1)
+    - echo "revive-adserver-${VERSION#?}.tar.gz  ${SHA}" > shasum.txt
+    - wget https://download.revive-adserver.com/revive-adserver-${VERSION#?}.tar.gz
+    - echo $SHA | sha256sum -c shasum.tx
+    - mv revive-adserver-${VERSION#?}.tar.gz revive.tar.gz
+  artifacts:
+    expire_in: 1 day
+    paths:
+      - version.txt
+      - revive.tar.gz
+
+containerize:
+  needs:
+    - download
+  stage: build
+  image: registry.gitlab.com/jitesoft/dockerfiles/misc:latest
+  script:
+    - VERSION=$(cat version.txt)
+    - TAGLIST=$("${CI_REGISTRY_IMAGE},jitesoft/revive-adserver" "${VERSION},latest")
+    - docker buildx build --platform "linux/amd64,linux/arm64" --build-arg VERSION="${VERSION}" --progress plain --push ${TAG_LIST} .
+
+
