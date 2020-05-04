@@ -8,7 +8,7 @@ download:
     GIT_STRATEGY: none
   image: registry.gitlab.com/jitesoft/dockerfiles/alpine:latest
   before_script:
-    - apk add --no-cache wget grept
+    - apk add --no-cache wget grep
   script:
     # Fetch latest version from github.
     - VERSION="$(wget -qO- https://github.com/revive-adserver/revive-adserver/releases | grep -oP '(?<=releases\/tag\/)(.*?)(?=\">)' | awk 'NR==1{print $1}' | head -1)"
