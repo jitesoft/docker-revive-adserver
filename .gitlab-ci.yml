@@ -33,6 +33,11 @@ containerize:
   script:
     - VERSION=$(cat version.txt)
     - TAGLIST=$("${CI_REGISTRY_IMAGE},jitesoft/revive-adserver" "${VERSION},latest")
-    - docker buildx build --platform "linux/amd64,linux/arm64" --build-arg VERSION="${VERSION}" --progress plain --push ${TAG_LIST} .
+    - docker buildx build --platform "linux/amd64,linux/arm64" --build-arg REVIVE_VERSION="${VERSION}" --progress plain --push ${TAG_LIST} .
+  only:
+    - master
+  tags:
+    - protected
+    - buildx
 
 
