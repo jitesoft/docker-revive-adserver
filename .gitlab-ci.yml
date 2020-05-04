@@ -17,7 +17,7 @@ download:
     - SHA=$(wget -qO- https://www.revive-adserver.com/download | grep -oP "(?<=sha256:)(\S*)(?=</li>)" | tail -1)
     - echo "revive-adserver-${VERSION#?}.tar.gz  ${SHA}" > shasum.txt
     - wget https://download.revive-adserver.com/revive-adserver-${VERSION#?}.tar.gz
-    - cat shasum.tx | sha256sum -c -
+    - cat shasum.txt | sha256sum -c -
     - mv revive-adserver-${VERSION#?}.tar.gz revive.tar.gz
   artifacts:
     expire_in: 1 day
