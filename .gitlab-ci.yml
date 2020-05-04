@@ -12,13 +12,13 @@ download:
   script:
     # Fetch latest version from github.
     - VERSION="$(wget -qO- https://github.com/revive-adserver/revive-adserver/releases | grep -oP '(?<=releases\/tag\/)(.*?)(?=\">)' | awk 'NR==1{print $1}' | head -1)"
-    - echo "${VERSION#?}" > version.txt # Remove "v"
+    - VERSION=${VERSION#?} # Remove "v"
+    - echo "${VERSION}" > version.txt
     # Fetch latest version SHA from revive page.
+    - wget https://download.revive-adserver.com/revive-adserver-${VERSION}.tar.gz
     - SHA=$(wget -qO- https://www.revive-adserver.com/download | grep -oP "(?<=sha256:)(\S*)(?=</li>)" | tail -1)
-    - echo "revive-adserver-${VERSION#?}.tar.gz  ${SHA}" > shasum.txt
-    - wget https://download.revive-adserver.com/revive-adserver-${VERSION#?}.tar.gz
-    - cat shasum.txt | sha256sum -c -
-    - mv revive-adserver-${VERSION#?}.tar.gz revive.tar.gz
+    - echo "${SHA}  revive-adserver-${VERSION}.tar.gz" | sha256sum -c -
+    - mv revive-adserver-${VERSION}.tar.gz revive.tar.gz
   artifacts:
     expire_in: 1 day
     paths:
