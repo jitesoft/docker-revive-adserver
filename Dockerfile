@@ -12,4 +12,8 @@ LABEL maintainer="Johannes Tegnér <johannes@jitesoft.com>" \
 
 RUN --mount=type=bind,source=./revive,target=/tmp/revive \
     mkdir -p /var/www/html \
- && tar -xhzf /tmp/revive/revive.tar.gz -C /var/www/html --strip-components=1
+ && tar -xhzf /tmp/revive/revive.tar.gz -C /var/www/html --strip-components=1 \
+ && chmod -R a+w /var/www/html/plugins \
+ && chmod -R a+w /var/www/html/plugins \
+ && chmod -R a+w /var/www/html/admin/plugins \
+ && chmod -R a+w /var/www/html/www/images
