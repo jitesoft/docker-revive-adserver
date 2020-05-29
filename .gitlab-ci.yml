@@ -33,7 +33,7 @@ containerize:
   image: registry.gitlab.com/jitesoft/dockerfiles/misc:latest
   script:
     - VERSION=$(cat version.txt)
-    - TAGLIST=$(helper "${CI_REGISTRY_IMAGE},jitesoft/revive-adserver" "${VERSION},latest")
+    - TAGLIST=$(helper "${CI_REGISTRY_IMAGE}" "${VERSION},latest")
     - docker buildx build --platform "linux/amd64,linux/arm64" --build-arg REVIVE_VERSION="${VERSION}" --progress plain --push ${TAG_LIST} .
   only:
     - master
