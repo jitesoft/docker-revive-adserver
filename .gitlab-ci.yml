@@ -34,6 +34,8 @@ containerize:
   script:
     - VERSION=$(cat version.txt)
     - TAG_LIST=$(helper "${CI_REGISTRY_IMAGE}" "${VERSION},latest")
+    - mkdir revive
+    - mv revive.tar.gz revive/
     - docker buildx build --platform "linux/amd64,linux/arm64" --build-arg REVIVE_VERSION="${VERSION}" --progress plain --push ${TAG_LIST} .
   only:
     - master
