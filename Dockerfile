@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:experimental
-FROM registry.gitlab.com/jitesoft/dockerfiles/php-fpm:latest
+FROM registry.gitlab.com/jitesoft/dockerfiles/php/runtime/fpm:7.4
 LABEL maintainer="Johannes Tegnér <johannes@jitesoft.com>" \
       maintainer.org="Jitesoft" \
       maintainer.org.uri="https://jitesoft.com" \
