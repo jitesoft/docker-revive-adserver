@@ -33,7 +33,7 @@ containerize:
   image: registry.gitlab.com/jitesoft/dockerfiles/misc:latest
   script:
     - VERSION=$(cat version.txt)
-    - TAG_LIST=$(helper "${CI_REGISTRY_IMAGE}" "${VERSION},latest")
+    - TAG_LIST=$(helper "${CI_REGISTRY_IMAGE}" "${VERSION},latest,${CI_COMMIT_SHA:0:6}")
     - mkdir revive
     - mv revive.tar.gz revive/
     - mv entrypoint.sh revive/entrypoint
