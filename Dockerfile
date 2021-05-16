@@ -16,7 +16,7 @@ RUN --mount=type=bind,source=./revive,target=/tmp/revive \
  && chmod +x /usr/local/bin/entrypoint-revive \
  && wget https://gist.githubusercontent.com/Johannestegner/1c8c479e367bcbed1a613ae90ff83291/raw/async.min.js \
  && mv async.min.js /var/www/html/www/delivery/new-async.js \
- && chown -R www-data:www-data /var/www/html
+ && chown -R www-data:www-data /var/www/html \
  && chmod -R a+w /var/www/html/var \
  && chmod -R a+w /var/www/html/plugins \
  && chmod -R a+w /var/www/html/www/admin/plugins \
