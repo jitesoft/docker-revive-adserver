@@ -57,9 +57,9 @@ download:
   script:
     # Fetch latest version SHA from revive page.
     - wget https://download.revive-adserver.com/revive-adserver-${VERSION}.tar.gz
-    - SHA=$(wget -qO- https://www.revive-adserver.com/download | grep -oP "(?<=sha256:)(\S*)(?=</li>)" | tail -1)
+    - SHA=$(wget -qO- https://www.revive-adserver.com/download | grep -oP "(?<=sha256:\ )(.*)(?=</li>)" | tail -1)
     - echo "SHA ${SHA}, Check $(sha256sum revive-adserver-${VERSION}.tar.gz)"
-    - echo "${SHA#?}  revive-adserver-${VERSION}.tar.gz" | sha256sum -c -
+    - echo "${SHA}  revive-adserver-${VERSION}.tar.gz" | sha256sum -c -
     - mv revive-adserver-${VERSION}.tar.gz revive.tar.gz
   artifacts:
     expire_in: 1 day
