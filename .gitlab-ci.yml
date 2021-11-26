@@ -1,19 +1,60 @@
+include:
+  - https://gitlab.com/jitesoft/gitlab-ci-lib/raw/master/Scan/trivy.yml
+
 stages:
+  - check
   - download
   - build
 
+check:
+  stage: check
+  image: registry.gitlab.com/jitesoft/dockerfiles/misc:latest
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+      when: always
+    - if: '$CI_PIPELINE_SOURCE == "web"'
+      when: always
+    - when: never
+  script:
+    - touch version.txt
+    - VERSION="$(wget -qO- https://github.com/revive-adserver/revive-adserver/releases | grep -oP '(?<=releases\/tag\/)(.*?)(?=\">)' | awk 'NR==1{print $1}' | head -1)"
+    - VERSION=${VERSION#?} # Remove "v"
+    - |
+      if [ ! -z "${FORCE_BUILD+x}" ] || [ "$(cat version.txt)" != ${VERSION} ]; then
+        echo "Triggering build of ${VERSION}"
+        curl \
+          -F token=${CI_JOB_TOKEN} \
+          -F ref=master \
+          -F "variables[VERSION]=${VERSION}" \
+          -F "variables[BUILD]=true" \
+          https://gitlab.com/api/v4/projects/${CI_PROJECT_ID}/trigger/pipeline
+      else
+        echo "Triggering scan of ${VERSION}
+        curl \
+          -F token=${CI_JOB_TOKEN} \
+          -F ref=master \
+          -F "variables[VERSION]=${VERSION}" \
+          -F "variables[SCAN]=true" \
+          https://gitlab.com/api/v4/projects/${CI_PROJECT_ID}/trigger/pipeline
+      fi
+  cache:
+    policy: pull
+    key: revive-versions
+    paths:
+      - version.txt
+
 download:
-  stage: download
+  rules:
+    - if: "$BUILD"
+      when: always
+    - when: never
+  stage: .pre
   variables:
     GIT_STRATEGY: none
-  image: registry.gitlab.com/jitesoft/dockerfiles/alpine:latest
+  image: registry.gitlab.com/jitesoft/dockerfiles/misc:latest
   before_script:
     - apk add --no-cache wget grep
   script:
-    # Fetch latest version from github.
-    - VERSION="$(wget -qO- https://github.com/revive-adserver/revive-adserver/releases | grep -oP '(?<=releases\/tag\/)(.*?)(?=\">)' | awk 'NR==1{print $1}' | head -1)"
-    - VERSION=${VERSION#?} # Remove "v"
-    - echo "${VERSION}" > version.txt
     # Fetch latest version SHA from revive page.
     - wget https://download.revive-adserver.com/revive-adserver-${VERSION}.tar.gz
     - SHA=$(wget -qO- https://www.revive-adserver.com/download | grep -oP "(?<=sha256:)(\S*)(?=</li>)" | tail -1)
@@ -23,18 +64,21 @@ download:
   artifacts:
     expire_in: 1 day
     paths:
-      - version.txt
       - revive.tar.gz
 
 containerize:
+  rules:
+    - if: "$BUILD"
+      when: on_success
+    - when: never
   needs:
     - download
   stage: build
   image: registry.gitlab.com/jitesoft/dockerfiles/misc:latest
   script:
-    - VERSION=$(cat version.txt)
     - TAG_LIST=$(helper "${CI_REGISTRY_IMAGE}" "${VERSION},latest,${CI_COMMIT_SHA:0:6}")
     - mkdir revive
+    - mv async.min.js revive/
     - mv revive.tar.gz revive/
     - mv entrypoint.sh revive/entrypoint
     - docker buildx build --platform "linux/amd64,linux/arm64" --build-arg REVIVE_VERSION="${VERSION}" --progress plain --push ${TAG_LIST} .
@@ -44,4 +88,28 @@ containerize:
     - protected
     - buildx
 
+cache:
+  rules:
+    - if: "$BUILD"
+      when: on_success
+    - when: never
+  stages: .post
+  script:
+    - echo "${VERSION}" > version.txt
+  cache:
+    policy: push
+    key: revive-versions
+    paths:
+      - version.txt
 
+scan:
+  stage: .post
+  extends: .scan.container.trivy.remote
+  rules:
+    - if: "$SCAN"
+      when: always
+    - if: "$BUILD"
+      when: on_success
+    - when: never
+  before_script:
+    - export SCANNING_IMAGE_NAME="${CI_REGISTRY_IMAGE}:${VERSION}"
