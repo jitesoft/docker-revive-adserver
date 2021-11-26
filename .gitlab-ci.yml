@@ -16,12 +16,11 @@ check:
       when: always
     - when: never
   script:
-    - apk add --no-cache jq
-    - VERSION="$(wget -qO- https://api.github.com/repos/revive-adserver/revive-adserver/tags | jq -r ".[0].name")"
+    - VERSION=$(wget -qO- https://api.github.com/repos/revive-adserver/revive-adserver/tags | jq -r ".[0].name")
     - touch version.txt
     - VERSION=${VERSION#?} # Remove "v"
     - |
-      if [ ! -z "${FORCE_BUILD+x}" ] || [ "$(cat version.txt)" != ${VERSION} ]; then
+      if [ ! -z "${FORCE_BUILD+x}" ] || [ "$(cat version.txt)" != "${VERSION}" ]; then
         echo "Triggering build of ${VERSION}"
         curl \
           -F token=${CI_JOB_TOKEN} \
@@ -30,7 +29,7 @@ check:
           -F "variables[BUILD]=true" \
           https://gitlab.com/api/v4/projects/${CI_PROJECT_ID}/trigger/pipeline
       else
-        echo "Triggering scan of ${VERSION}
+        echo "Triggering scan of ${VERSION}"
         curl \
           -F token=${CI_JOB_TOKEN} \
           -F ref=master \
@@ -40,7 +39,7 @@ check:
       fi
   cache:
     policy: pull
-    key: revive-versions
+    key: revive-version
     paths:
       - version.txt
 
@@ -97,7 +96,7 @@ create:cache:
     - echo "${VERSION}" > version.txt
   cache:
     policy: push
-    key: revive-versions
+    key: revive-version
     paths:
       - version.txt
 
