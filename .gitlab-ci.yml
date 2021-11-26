@@ -86,7 +86,7 @@ containerize:
     - protected
     - buildx
 
-cache:
+create:cache:
   rules:
     - if: "$BUILD"
       when: on_success
