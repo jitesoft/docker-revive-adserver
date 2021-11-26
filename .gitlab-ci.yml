@@ -91,7 +91,7 @@ create:cache:
     - if: "$BUILD"
       when: on_success
     - when: never
-  stages: .post
+  stage: .post
   script:
     - echo "${VERSION}" > version.txt
   cache:
