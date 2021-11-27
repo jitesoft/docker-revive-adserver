@@ -15,6 +15,7 @@ RUN --mount=type=bind,source=./revive,target=/tmp/revive \
  && cp /tmp/revive/entrypoint /usr/local/bin/entrypoint-revive \
  && chmod +x /usr/local/bin/entrypoint-revive \
  && cp /tmp/revive/async.min.js /var/www/html/www/delivery/new-async.js \
+ && cp /tmp/revive/conf.tmpl /usr/local/conf.tmpl \
  && chown -R www-data:www-data /var/www/html \
  && chmod -R a+w /var/www/html/var \
  && chmod -R a+w /var/www/html/plugins \
