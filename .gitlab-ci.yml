@@ -76,8 +76,7 @@ containerize:
   stage: build
   image: registry.gitlab.com/jitesoft/dockerfiles/misc:latest
   script:
-#    - TAG_LIST=$(helper "${CI_REGISTRY_IMAGE},jitesoft/revive-adserver,ghcr.io/jitesoft/revive-adserver" "${VERSION},latest,${CI_COMMIT_SHA:0:6}")
-    - TAG_LIST=$(helper "${CI_REGISTRY_IMAGE}" "experimental")
+    - TAG_LIST=$(helper "${CI_REGISTRY_IMAGE},jitesoft/revive-adserver,ghcr.io/jitesoft/revive-adserver" "${VERSION},latest,${CI_COMMIT_SHA:0:6}")
     - mkdir revive
     - mv async.min.js revive/
     - mv conf.tmpl revive/

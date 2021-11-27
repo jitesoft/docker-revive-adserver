@@ -49,14 +49,11 @@ Images are built for amd64 and aarch64, versions are based on the version of rev
 
 Images can be found at:
 
-* `jitesoft/revive-adserver`
-* `registry.gitlab.com/jitesoft/dockerfiles/revive-adserver`
-
-* [DockerHub](https://hub.docker.com/r/jitesoft/node)
+* [DockerHub](https://hub.docker.com/r/jitesoft/revive-adserve)
   * `docker.io/revive-adserver`
-* [GitLab](https://gitlab.com/jitesoft/dockerfiles/node-base)
+* [GitLab](https://gitlab.com/jitesoft/dockerfiles/revive-adserve)
   * `registry.gitlab.com/jitesoft/dockerfiles/revive-adserver`
-* [GitHub](https://github.com/orgs/jitesoft/packages/container/package/node)
+* [GitHub](https://github.com/orgs/jitesoft/packages/container/package/revive-adserve)
   * `ghcr.io/jitesoft/revive-adserver`
 
 ## Image labels
