@@ -11,6 +11,7 @@ LABEL maintainer="Johannes Tegnér <johannes@jitesoft.com>" \
 
 RUN --mount=type=bind,source=./revive,target=/tmp/revive \
     mkdir -p /var/www/html \
+ && apk add --no-cache gettext libintl \
  && tar -xhzf /tmp/revive/revive.tar.gz -C /var/www/html --strip-components=1 \
  && cp /tmp/revive/entrypoint /usr/local/bin/entrypoint-revive \
  && chmod +x /usr/local/bin/entrypoint-revive \
