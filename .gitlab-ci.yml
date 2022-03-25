@@ -69,8 +69,8 @@ download:
 containerize:
   parallel:
     matrix:
-      - { PHP_VERSION: 7.4, EXTRA_TAGS: "7.4" }
-      - { PHP_VERSION: 8.0, EXTRA_TAGS: "latest,8.0" }
+      - { PHP_VERSION: "7.4", EXTRA_TAGS: "7.4" }
+      - { PHP_VERSION: "8.0", EXTRA_TAGS: "latest,8.0" }
   rules:
     - if: "$BUILD"
       when: on_success
