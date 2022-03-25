@@ -67,6 +67,10 @@ download:
       - revive.tar.gz
 
 containerize:
+  parallel:
+    matrix:
+      - { PHP_VERSION: 7.4, EXTRA_TAGS: "7.4" }
+      - { PHP_VERSION: 8.0, EXTRA_TAGS: "latest,8.0" }
   rules:
     - if: "$BUILD"
       when: on_success
@@ -76,13 +80,13 @@ containerize:
   stage: build
   image: registry.gitlab.com/jitesoft/dockerfiles/misc:latest
   script:
-    - TAG_LIST=$(helper "${CI_REGISTRY_IMAGE},jitesoft/revive-adserver,ghcr.io/jitesoft/revive-adserver" "${VERSION},latest,${CI_COMMIT_SHA:0:6}")
+    - TAG_LIST=$(helper "${CI_REGISTRY_IMAGE},jitesoft/revive-adserver,ghcr.io/jitesoft/revive-adserver" "${VERSION}-php${PHP_VERSION},${EXTRA_TAGS},${CI_COMMIT_SHA:0:6}")
     - mkdir revive
     - mv async.min.js revive/
     - mv conf.tmpl revive/
     - mv revive.tar.gz revive/
     - mv entrypoint.sh revive/entrypoint
-    - docker buildx build --platform "linux/amd64,linux/arm64" --build-arg REVIVE_VERSION="${VERSION}" --progress plain --push ${TAG_LIST} .
+    - docker buildx build --platform "linux/amd64,linux/arm64" --build-arg PHP_VERSION=${PHP_VERSION} --build-arg REVIVE_VERSION="${VERSION}" --progress plain --push ${TAG_LIST} .
   tags:
     - protected
     - buildx
